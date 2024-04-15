@@ -115,7 +115,7 @@ To add Foundry to Scaffold-OP, follow this simple [tutorial](https://hardhat.org
 
 ## User Journey 
 
-#Onboarding and Account Creation:
+##Onboarding and Account Creation:
 
 User arrives at the mood diary application and is prompted to connect their digital wallet (e.g., MetaMask) to interact with the Ethereum blockchain.
 If the user is new, they create a new account by signing a transaction with their digital wallet, which generates a unique Ethereum address for them.
@@ -125,23 +125,25 @@ Smart Contract Deployment:
 Upon account creation or first login, the mood diary application deploys a smart contract to the Ethereum blockchain to store mood entries securely.
 The smart contract is associated with the user's Ethereum address and serves as the decentralized backend for storing and managing mood data.
 
-#Adding a Mood Entry:
+##Adding a Mood Entry:
 
 The user interacts with the mood diary application's interface to add a new mood entry.
 The application prompts the user to sign a transaction with their digital wallet to record the mood entry on the Ethereum blockchain.
 The mood entry, along with metadata such as the date, time, and mood type, is stored securely in the user's smart contract.
-Viewing and Interacting with Mood Entries:
+
+##Viewing and Interacting with Mood Entries:
 
 The user can view their past mood entries through the mood diary application's interface.
 Mood entries are retrieved from the user's smart contract on the Ethereum blockchain and displayed in a user-friendly format.
 Users can interact with their mood entries, such as editing or deleting them, by signing transactions with their digital wallet to update the smart contract state.
 
-#Blockchain Verification and Immutability:
+##Blockchain Verification and Immutability:
 
 Each mood entry recorded on the Ethereum blockchain is immutable and verifiable.
 Users can verify the authenticity and integrity of their mood data by accessing the blockchain directly or through blockchain explorers.
 The decentralized nature of the blockchain ensures that mood entries cannot be tampered with or altered by any single entity.
-Smart Contract Integration with Other Services:
+
+##Smart Contract Integration with Other Services:
 
 The mood diary application leverages smart contract functionality to integrate with other decentralized services or protocols.
 For example, users may opt to encrypt their mood entries using decentralized encryption services, store backups of their mood data on decentralized storage networks like IPFS, or trigger automated actions based on mood data through decentralized autonomous organizations (DAOs).
@@ -151,7 +153,7 @@ Users retain full control and ownership of their mood data stored on the Ethereu
 The mood diary application implements privacy-preserving features, such as encryption and zero-knowledge proofs, to protect sensitive user data from unauthorized access.
 Users can selectively share access to their mood data with trusted individuals or applications through permissioned smart contract interactions.
 
-#Gas Fees and Transaction Costs:
+##Gas Fees and Transaction Costs:
 
 Users are responsible for paying gas fees associated with interacting with smart contracts on the Ethereum blockchain.
 The mood diary application provides transparency regarding gas fees and allows users to adjust transaction parameters (e.g., gas price, gas limit) to optimize cost and transaction speed.
