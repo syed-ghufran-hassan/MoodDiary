@@ -148,7 +148,8 @@ The decentralized nature of the blockchain ensures that mood entries cannot be t
 
 The mood diary application leverages smart contract functionality to integrate with other decentralized services or protocols.
 For example, users may opt to encrypt their mood entries using decentralized encryption services, store backups of their mood data on decentralized storage networks like IPFS, or trigger automated actions based on mood data through decentralized autonomous organizations (DAOs).
-Privacy and Data Ownership:
+
+## Privacy and Data Ownership:
 
 Users retain full control and ownership of their mood data stored on the Ethereum blockchain.
 The mood diary application implements privacy-preserving features, such as encryption and zero-knowledge proofs, to protect sensitive user data from unauthorized access.
@@ -158,11 +159,13 @@ Users can selectively share access to their mood data with trusted individuals o
 
 Users are responsible for paying gas fees associated with interacting with smart contracts on the Ethereum blockchain.
 The mood diary application provides transparency regarding gas fees and allows users to adjust transaction parameters (e.g., gas price, gas limit) to optimize cost and transaction speed.
-Community Engagement and Governance:
+
+## Community Engagement and Governance:
 
 The mood diary application fosters community engagement and participation through decentralized governance mechanisms.
 Users can participate in governance processes, such as proposing and voting on improvements to the application, through decentralized governance tokens or voting mechanisms integrated with smart contracts.
-Continuous Improvement and Upgrades:
+
+## Continuous Improvement and Upgrades:
 
 The development team continuously monitors and updates the smart contracts powering the mood diary application to ensure security, scalability, and compatibility with evolving blockchain standards.
 Users are notified of smart contract upgrades and have the option to migrate their mood data to updated contract versions while maintaining data integrity and privacy.
