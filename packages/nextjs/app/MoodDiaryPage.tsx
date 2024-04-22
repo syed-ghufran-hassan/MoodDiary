@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ethers } from "ethers";
-import { MoodDiary } from "../contracts/MoodDiary.sol"; // Assuming you've compiled and deployed the MoodDiary contract
+import { MoodDiary } from "../contracts/deployedContracts.ts"; // Assuming you've compiled and deployed the MoodDiary contract
 
 const MoodDiaryPage = () => {
   const [mood, setMood] = useState<string>("");
