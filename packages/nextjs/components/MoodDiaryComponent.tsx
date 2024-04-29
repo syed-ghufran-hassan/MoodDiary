@@ -1,7 +1,7 @@
 // components/MoodDiaryComponent.tsx
 import React, { useState } from "react";
 import { useContractFunction } from "wagmi";
-import { MoodDiary } from "~~/contracts"; // Assuming MoodDiary.sol is the smart contract
+import { MoodDiary } from "~~/contracts/MoodDiary"; // Assuming MoodDiary.sol is the smart contract
 
 const MoodDiaryComponent: React.FC = () => {
   const [mood, setMood] = useState("");
