@@ -9,7 +9,7 @@ import { Address } from "~~/components/scaffold-eth";
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
 
-  // State for storing the mood value
+ // State for storing the mood value
   const [mood, setMood] = useState<string>("");
 
   // Function for updating the mood value
@@ -27,7 +27,7 @@ const Home: NextPage = () => {
   };
 
   // Read the mood value from the contract using the useContractCall hook
-  const moodFromContract = useContractCall({
+  const moodFromContractCall = useContractCall({
     abi: MoodDiary.interface,
     address: "YOUR_CONTRACT_ADDRESS", // Replace with your contract address
     method: "getMood",
@@ -76,6 +76,11 @@ const Home: NextPage = () => {
         {state.status === "Exception" && (
           <p className="text-red-500 mt-2">{state.errorMessage}</p>
         )}
+        {/* Displaying the mood from the contract */}
+        <div className="mt-4">
+          <p className="font-semibold">Current Mood:</p>
+          {moodFromContractCall && <p>{moodFromContractCall}</p>}
+        </div>
         {/* Displaying the mood from the contract */}
         <div className="mt-4">
           <p className="font-semibold">Current Mood:</p>
