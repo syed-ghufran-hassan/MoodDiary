@@ -14,7 +14,7 @@ const Home: NextPage = () => {
   const [mood, setMood] = useState<string>("");
   const [transactionStatus, setTransactionStatus] = useState<string | null>(null);
 
- / Function to handle mood input change
+ // Function to handle mood input change
   const handleMoodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMood(event.target.value);
   };
