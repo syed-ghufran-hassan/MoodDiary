@@ -1,70 +1,138 @@
 "use client";
-
+import React, { useState, useEffect  } from "react";
 import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
+import { ethers } from "ethers"; 
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
 
-  return (
-    <>
-      <div className="flex items-center flex-col flex-grow pt-10">
-        <div className="px-5">
-          <h1 className="text-center">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-OP 🏗🔴 </span>
-          </h1>
-          <div className="flex justify-center items-center space-x-2">
-            <p className="my-2 font-medium">Connected Address:</p>
-            <Address address={connectedAddress} />
-          </div>
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/app/page.tsx
-            </code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
-          </p>
-        </div>
+  // State for storing the mood value
+  const [mood, setMood] = useState<string>("");
+  const [transactionStatus, setTransactionStatus] = useState<string | null>(null);
+  const [moodFromContract, setMoodFromContract] = useState<string | null>(null);
 
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-          </div>
+  // Function to handle mood input change
+  const handleMoodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setMood(event.target.value);
+  };
+
+  // Function to handle form submission
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      
+   // Check if Ethereum provider is available
+   if (typeof window.ethereum === 'undefined') {
+    throw new Error("Ethereum provider is not available.");
+  }
+
+  // Check if user is connected to the Ethereum provider
+  if (!window.ethereum.selectedAddress) {
+    throw new Error("Please connect your wallet.");
+  }
+      // Connect to the provider
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      // Get the signer
+      const signer = provider.getSigner();
+      // Connect to the contract with the signer
+      const moodDiaryContract = new ethers.Contract(connectedAddress, MoodDiary.interface, signer); // Use connectedAddress
+
+      // Call the setMood function
+      const transaction = await moodDiaryContract.setMood(mood);
+      // Wait for the transaction to be mined
+      await transaction.wait();
+
+      // Update transaction status
+      setTransactionStatus("Mood updated successfully!");
+    } catch (error) {
+      console.error("Error updating mood:", error);
+      setTransactionStatus("Error updating mood: " + error.message);
+    }
+  };
+
+  // Function to fetch mood from the contract
+  const fetchMoodFromContract = async () => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const contract = new ethers.Contract(connectedAddress, MoodDiary.interface, provider);
+      const mood = await contract.getMood();
+      setMoodFromContract(mood);
+    } catch (error) {
+      console.error("Error fetching mood from contract:", error);
+      setMoodFromContract(null);
+    }
+  };
+
+  // Fetch mood from contract when connectedAddress changes
+  useEffect(() => {
+    if (connectedAddress) {
+      fetchMoodFromContract();
+    }
+  }, [connectedAddress]);
+
+  useEffect(() => {
+    window.addEventListener('load', () => {
+      // Check if Ethereum provider is available
+      if (typeof window.ethereum === 'undefined') {
+        console.error("Ethereum provider is not available.");
+        return;
+      }
+  
+      // Your code that interacts with window.ethereum
+      console.log("Ethereum provider is available.");
+  
+      // Example: Request user's permission to access their accounts
+      window.ethereum.request({ method: 'eth_requestAccounts' })
+        .then((accounts: string[]) => {
+          console.log("User's accounts:", accounts);
+        })
+        .catch((error: Error) => {
+          console.error("Error requesting accounts:", error);
+        });
+    });
+  }, []);
+
+  return (
+    <div className="flex items-center flex-col flex-grow pt-10">
+      <div className="px-5">
+        <h1 className="text-center">
+          <span className="block text-2xl mb-2">Welcome to</span>
+          <span className="block text-4xl font-bold">Mood Diary </span>
+        </h1>
+        <div className="flex justify-center items-center space-x-2">
+          <p className="my-2 font-medium">Connected Address:</p>
+          <Address address={connectedAddress} />
+        </div>
+        {/* Form for updating the mood */}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            value={mood}
+            onChange={handleMoodChange}
+            placeholder="Enter your mood..."
+            className="border border-gray-300 rounded px-4 py-2 mb-4 w-full"
+          />
+          <button
+            type="submit"
+            className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600"
+          >
+            Update Mood
+          </button>
+        </form>
+        {/* Displaying transaction status */}
+        {transactionStatus && <p className="mt-2">{transactionStatus}</p>}
+        {/* Displaying the mood from the contract */}
+        <div className="mt-4">
+          <p className="font-semibold">Current Mood:</p>
+          {moodFromContract && <p>{moodFromContract}</p>}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
