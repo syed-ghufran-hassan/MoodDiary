@@ -5,38 +5,57 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
+import { ethers } from "ethers"; 
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
 
- // State for storing the mood value
+// State for storing the mood value
   const [mood, setMood] = useState<string>("");
+  const [transactionStatus, setTransactionStatus] = useState<string | null>(null);
 
-  // Function for updating the mood value
-  const { send, state } = useContractFunction(MoodDiary, "setMood");
-
-  // Function to handle mood input change
+ / Function to handle mood input change
   const handleMoodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMood(event.target.value);
   };
 
   // Function to handle form submission
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    send(mood); // Call setMood function of the contract
+
+    try {
+      // Connect to the provider
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      // Get the signer
+      const signer = provider.getSigner();
+      // Connect to the contract with the signer
+      const moodDiaryContract = new ethers.Contract(connectedAddress, MoodDiary.interface, signer); // Use connectedAddress
+
+      // Call the setMood function
+      const transaction = await moodDiaryContract.setMood(mood);
+      // Wait for the transaction to be mined
+      await transaction.wait();
+
+      // Update transaction status
+      setTransactionStatus("Mood updated successfully!");
+    } catch (error) {
+      console.error("Error updating mood:", error);
+      setTransactionStatus("Error updating mood: " + error.message);
+    }
   };
 
   // Read the mood value from the contract using the useContractCall hook
-  const moodFromContractCall = useContractCall({
+  const moodFromContract = useContractCall({
     abi: MoodDiary.interface,
-    address: "YOUR_CONTRACT_ADDRESS", // Replace with your contract address
+    address: connectedAddress, // Use connectedAddress
     method: "getMood",
   });
 
   // Read mood data using useScaffoldReadContract hook
-  const { data: moodFromContract } = useScaffoldReadContract({
-    contractName: "MoodDiary",
-    functionName: "getMood",
+  const { data: totalCounter } = useScaffoldReadContract({
+    contractName: "YourContract",
+    functionName: "userGreetingCounter",
+    args: [connectedAddress], // Pass connected address as argument
   });
 
   return (
@@ -67,20 +86,7 @@ const Home: NextPage = () => {
           </button>
         </form>
         {/* Displaying transaction status */}
-        {state.status === "Mining" && (
-          <p className="text-gray-500 mt-2">Transaction is being mined...</p>
-        )}
-        {state.status === "Success" && (
-          <p className="text-green-500 mt-2">Mood updated successfully!</p>
-        )}
-        {state.status === "Exception" && (
-          <p className="text-red-500 mt-2">{state.errorMessage}</p>
-        )}
-        {/* Displaying the mood from the contract */}
-        <div className="mt-4">
-          <p className="font-semibold">Current Mood:</p>
-          {moodFromContractCall && <p>{moodFromContractCall}</p>}
-        </div>
+        {transactionStatus && <p className="mt-2">{transactionStatus}</p>}
         {/* Displaying the mood from the contract */}
         <div className="mt-4">
           <p className="font-semibold">Current Mood:</p>
