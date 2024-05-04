@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
@@ -10,11 +10,12 @@ import { ethers } from "ethers";
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
 
-// State for storing the mood value
+  // State for storing the mood value
   const [mood, setMood] = useState<string>("");
   const [transactionStatus, setTransactionStatus] = useState<string | null>(null);
+  const [moodFromContract, setMoodFromContract] = useState<string | null>(null);
 
- // Function to handle mood input change
+  // Function to handle mood input change
   const handleMoodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMood(event.target.value);
   };
@@ -24,6 +25,16 @@ const Home: NextPage = () => {
     event.preventDefault();
 
     try {
+      // Check if Ethereum provider is available
+      if (typeof window.ethereum === 'undefined') {
+        throw new Error("Ethereum provider is not available.");
+      }
+
+      // Check if user is connected to the Ethereum provider
+      if (!window.ethereum.selectedAddress) {
+        throw new Error("Please connect your wallet.");
+      }
+
       // Connect to the provider
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       // Get the signer
@@ -44,19 +55,32 @@ const Home: NextPage = () => {
     }
   };
 
-  // Read the mood value from the contract using the useContractCall hook
-  const moodFromContract = useContractCall({
-    abi: MoodDiary.interface,
-    address: connectedAddress, // Use connectedAddress
-    method: "getMood",
-  });
+  // Function to fetch mood from the contract
+  const fetchMoodFromContract = async () => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const contract = new ethers.Contract(connectedAddress, MoodDiary.interface, provider);
+      const mood = await contract.getMood();
+      setMoodFromContract(mood);
+    } catch (error) {
+      console.error("Error fetching mood from contract:", error);
+      setMoodFromContract(null);
+    }
+  };
 
-  // Read mood data using useScaffoldReadContract hook
-  const { data: totalCounter } = useScaffoldReadContract({
-    contractName: "YourContract",
-    functionName: "userGreetingCounter",
-    args: [connectedAddress], // Pass connected address as argument
-  });
+  // Fetch mood from contract when connectedAddress changes
+  useEffect(() => {
+    if (connectedAddress) {
+      fetchMoodFromContract();
+    }
+  }, [connectedAddress]);
+
+  // Wait for the window to load before interacting with window.ethereum
+  useEffect(() => {
+    window.addEventListener('load', () => {
+      // Your code that interacts with window.ethereum
+    });
+  }, []);
 
   return (
     <div className="flex items-center flex-col flex-grow pt-10">
