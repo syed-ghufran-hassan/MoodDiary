@@ -37,4 +37,6 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
 
 export default deployYourContract;
 
+
 deployYourContract.tags = ["MoodDiary"];
+

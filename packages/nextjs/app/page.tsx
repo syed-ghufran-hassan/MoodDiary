@@ -5,7 +5,7 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
-//import { ethers } from "ethers"; 
+import { ethers } from "ethers"; 
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
@@ -36,11 +36,45 @@ const Home: NextPage = () => {
       }
 
       // Connect to the provider
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      //const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const provider = new ethers.BrowserProvider(window.ethereum)
       // Get the signer
-      const signer = provider.getSigner();
+     const signer = await provider.getSigner();
+
+     // Extract the ABI from the artifact
+const contractABI = [
+  {
+    "inputs": [],
+    "name": "getMood",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_mood",
+        "type": "string"
+      }
+    ],
+    "name": "setMood",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+];
+
+// Create the contract instance
+const moodDiaryContract = new ethers.Contract(connectedAddress, contractABI, signer);
       // Connect to the contract with the signer
-      const moodDiaryContract = new ethers.Contract(connectedAddress, MoodDiary.interface, signer); // Use connectedAddress
+  //    const moodDiaryContract = new ethers.Contract(connectedAddress, MoodDiary.interface, signer); // Use connectedAddress
 
       // Call the setMood function
       const transaction = await moodDiaryContract.setMood(mood);
@@ -49,6 +83,7 @@ const Home: NextPage = () => {
 
       // Update transaction status
       setTransactionStatus("Mood updated successfully!");
+      fetchMoodFromContract();
     } catch (error) {
       console.error("Error updating mood:", error);
       setTransactionStatus("Error updating mood: " + error.message);
@@ -58,9 +93,39 @@ const Home: NextPage = () => {
   // Function to fetch mood from the contract
   const fetchMoodFromContract = async () => {
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const contract = new ethers.Contract(connectedAddress, MoodDiary.interface, provider);
-      const mood = await contract.getMood();
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const contractABI = [
+        {
+          "inputs": [],
+          "name": "getMood",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "_mood",
+              "type": "string"
+            }
+          ],
+          "name": "setMood",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ];
+     // const contract = new ethers.Contract(connectedAddress, MoodDiary.interface, provider);
+      const moodDiaryContract = new ethers.Contract(connectedAddress, contractABI, provider);
+      const mood = await moodDiaryContract.getMood();
+      console.log(mood);
       setMoodFromContract(mood);
     } catch (error) {
       console.error("Error fetching mood from contract:", error);
