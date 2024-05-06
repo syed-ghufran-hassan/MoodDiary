@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
@@ -25,22 +25,56 @@ const Home: NextPage = () => {
     event.preventDefault();
 
     try {
-      
-   // Check if Ethereum provider is available
-   if (typeof window.ethereum === 'undefined') {
-    throw new Error("Ethereum provider is not available.");
-  }
+      // Check if Ethereum provider is available
+      if (typeof window.ethereum === 'undefined') {
+        throw new Error("Ethereum provider is not available.");
+      }
 
-  // Check if user is connected to the Ethereum provider
-  if (!window.ethereum.selectedAddress) {
-    throw new Error("Please connect your wallet.");
-  }
+      // Check if user is connected to the Ethereum provider
+      if (!window.ethereum.selectedAddress) {
+        throw new Error("Please connect your wallet.");
+      }
+
       // Connect to the provider
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      //const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const provider = new ethers.BrowserProvider(window.ethereum)
       // Get the signer
-      const signer = provider.getSigner();
+     const signer = await provider.getSigner();
+
+     // Extract the ABI from the artifact
+const contractABI = [
+  {
+    "inputs": [],
+    "name": "getMood",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_mood",
+        "type": "string"
+      }
+    ],
+    "name": "setMood",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+];
+
+// Create the contract instance
+const moodDiaryContract = new ethers.Contract(connectedAddress, contractABI, signer);
       // Connect to the contract with the signer
-      const moodDiaryContract = new ethers.Contract(connectedAddress, MoodDiary.interface, signer); // Use connectedAddress
+  //    const moodDiaryContract = new ethers.Contract(connectedAddress, MoodDiary.interface, signer); // Use connectedAddress
 
       // Call the setMood function
       const transaction = await moodDiaryContract.setMood(mood);
@@ -49,6 +83,7 @@ const Home: NextPage = () => {
 
       // Update transaction status
       setTransactionStatus("Mood updated successfully!");
+      fetchMoodFromContract();
     } catch (error) {
       console.error("Error updating mood:", error);
       setTransactionStatus("Error updating mood: " + error.message);
@@ -58,9 +93,39 @@ const Home: NextPage = () => {
   // Function to fetch mood from the contract
   const fetchMoodFromContract = async () => {
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const contract = new ethers.Contract(connectedAddress, MoodDiary.interface, provider);
-      const mood = await contract.getMood();
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const contractABI = [
+        {
+          "inputs": [],
+          "name": "getMood",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "_mood",
+              "type": "string"
+            }
+          ],
+          "name": "setMood",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ];
+     // const contract = new ethers.Contract(connectedAddress, MoodDiary.interface, provider);
+      const moodDiaryContract = new ethers.Contract(connectedAddress, contractABI, provider);
+      const mood = await moodDiaryContract.getMood();
+      console.log(mood);
       setMoodFromContract(mood);
     } catch (error) {
       console.error("Error fetching mood from contract:", error);
@@ -75,25 +140,10 @@ const Home: NextPage = () => {
     }
   }, [connectedAddress]);
 
+  // Wait for the window to load before interacting with window.ethereum
   useEffect(() => {
     window.addEventListener('load', () => {
-      // Check if Ethereum provider is available
-      if (typeof window.ethereum === 'undefined') {
-        console.error("Ethereum provider is not available.");
-        return;
-      }
-  
       // Your code that interacts with window.ethereum
-      console.log("Ethereum provider is available.");
-  
-      // Example: Request user's permission to access their accounts
-      window.ethereum.request({ method: 'eth_requestAccounts' })
-        .then((accounts: string[]) => {
-          console.log("User's accounts:", accounts);
-        })
-        .catch((error: Error) => {
-          console.error("Error requesting accounts:", error);
-        });
     });
   }, []);
 

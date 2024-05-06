@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   11155420: {
     MoodDiary: {
-      address: "0xCfF2B195ce89cb6bd9138f01aB0BB214a8f631DF",
+      address: "0xba4C4C5aA1a59A0AC1Be8D72ab0B80725d98366d",
       abi: [
         {
           inputs: [],
