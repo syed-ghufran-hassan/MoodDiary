@@ -24,57 +24,56 @@ const Home: NextPage = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    // Check if Ethereum provider is available
+    if (typeof window.ethereum === 'undefined') {
+      setTransactionStatus("Ethereum provider is not available. Please install a wallet extension or use a browser with Ethereum support.");
+      return;
+    }
+
+    // Check if user is connected to the Ethereum provider
+    if (!window.ethereum.selectedAddress) {
+      setTransactionStatus("Please connect your wallet to use this application.");
+      return;
+    }
+
     try {
-      // Check if Ethereum provider is available
-      if (typeof window.ethereum === 'undefined') {
-        throw new Error("Ethereum provider is not available.");
-      }
-
-      // Check if user is connected to the Ethereum provider
-      if (!window.ethereum.selectedAddress) {
-        throw new Error("Please connect your wallet.");
-      }
-
       // Connect to the provider
-      //const provider = new ethers.providers.Web3Provider(window.ethereum);
       const provider = new ethers.BrowserProvider(window.ethereum)
       // Get the signer
-     const signer = await provider.getSigner();
+      const signer = await provider.getSigner();
 
-     // Extract the ABI from the artifact
-const contractABI = [
-  {
-    "inputs": [],
-    "name": "getMood",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_mood",
-        "type": "string"
-      }
-    ],
-    "name": "setMood",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-];
+      // Extract the ABI from the artifact
+      const contractABI = [
+        {
+          "inputs": [],
+          "name": "getMood",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "_mood",
+              "type": "string"
+            }
+          ],
+          "name": "setMood",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ];
 
-// Create the contract instance
-const moodDiaryContract = new ethers.Contract(connectedAddress, contractABI, signer);
-      // Connect to the contract with the signer
-  //    const moodDiaryContract = new ethers.Contract(connectedAddress, MoodDiary.interface, signer); // Use connectedAddress
+      // Create the contract instance
+      const moodDiaryContract = new ethers.Contract(connectedAddress, contractABI, signer);
 
       // Call the setMood function
       const transaction = await moodDiaryContract.setMood(mood);
@@ -122,7 +121,6 @@ const moodDiaryContract = new ethers.Contract(connectedAddress, contractABI, sig
           "type": "function"
         }
       ];
-     // const contract = new ethers.Contract(connectedAddress, MoodDiary.interface, provider);
       const moodDiaryContract = new ethers.Contract(connectedAddress, contractABI, provider);
       const mood = await moodDiaryContract.getMood();
       console.log(mood);
