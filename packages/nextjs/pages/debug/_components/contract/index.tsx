@@ -3,6 +3,6 @@ export { ContractUI } from "./ContractUI";
 export { DisplayVariable } from "./DisplayVariable";
 export { ReadOnlyFunctionForm } from "./ReadOnlyFunctionForm";
 export { TxReceipt } from "./TxReceipt";
-export { utilsContract } from "./utilsContract";
+export * as utilsContract from "./utilsContract";
 export { utilsDisplay } from "./utilsDisplay";
 export { WriteOnlyFunctionForm } from "./WriteOnlyFunctionForm";
