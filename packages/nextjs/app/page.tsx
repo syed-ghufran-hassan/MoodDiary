@@ -31,7 +31,7 @@ const Home: NextPage = () => {
     }
 
     // Check if user is connected to the Ethereum provider
-    if (!window.ethereum as any).selectedAddress) {
+    if (!(window.ethereum as any).selectedAddress) {
       setTransactionStatus("Please connect your wallet to use this application.");
       return;
     }
