@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { PaginationButton, SearchBar, TransactionsTable } from "./_components";
+import { PaginationButton, TransactionsTable } from "./_components";
 import type { NextPage } from "next";
 import { hardhat } from "viem/chains";
 import { useFetchBlocks } from "~~/hooks/scaffold-eth";
