@@ -83,10 +83,10 @@ const Home: NextPage = () => {
       // Update transaction status
       setTransactionStatus("Mood updated successfully!");
       fetchMoodFromContract();
-    } catch (error) {
-      console.error("Error updating mood:", error);
-      setTransactionStatus("Error updating mood: " + error.message);
-    }
+    } catch (error: any) {
+  console.error("Error updating mood:", error);
+  setTransactionStatus("Error updating mood: " + (error instanceof Error ? error.message : String(error)));
+}
   };
 
   // Function to fetch mood from the contract
