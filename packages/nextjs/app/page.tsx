@@ -91,45 +91,49 @@ const Home: NextPage = () => {
 
   // Function to fetch mood from the contract
   const fetchMoodFromContract = async () => {
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const contractABI = [
-        {
-          "inputs": [],
-          "name": "getMood",
-          "outputs": [
-            {
-              "internalType": "string",
-              "name": "",
-              "type": "string"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "string",
-              "name": "_mood",
-              "type": "string"
-            }
-          ],
-          "name": "setMood",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        }
-      ];
-      const moodDiaryContract = new ethers.Contract(connectedAddress, contractABI, provider);
-      const mood = await moodDiaryContract.getMood();
-      console.log(mood);
-      setMoodFromContract(mood);
-    } catch (error) {
-      console.error("Error fetching mood from contract:", error);
-      setMoodFromContract(null);
+  try {
+    if (typeof window.ethereum === 'undefined') {
+      throw new Error("Ethereum provider is not available.");
     }
-  };
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const contractABI = [
+      {
+        "inputs": [],
+        "name": "getMood",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_mood",
+            "type": "string"
+          }
+        ],
+        "name": "setMood",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
+    const moodDiaryContract = new ethers.Contract(connectedAddress ?? "", contractABI, provider);
+    const mood = await moodDiaryContract.getMood();
+    console.log(mood);
+    setMoodFromContract(mood);
+  } catch (error) {
+    console.error("Error fetching mood from contract:", error);
+    setMoodFromContract(null);
+  }
+};
 
   // Fetch mood from contract when connectedAddress changes
   useEffect(() => {
