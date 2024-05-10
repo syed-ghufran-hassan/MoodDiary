@@ -73,7 +73,7 @@ const Home: NextPage = () => {
       ];
 
       // Create the contract instance
-      const moodDiaryContract = new ethers.Contract(connectedAddress, contractABI, signer);
+      const moodDiaryContract = new ethers.Contract(connectedAddress ?? "", contractABI, signer);
 
       // Call the setMood function
       const transaction = await moodDiaryContract.setMood(mood);
